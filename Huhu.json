@@ -1,0 +1,21 @@
+{
+  "sourceName": "Huhu.to (RAW)",
+  "iconUrl": "https://huhu.to/favicon.ico",
+  "author": {
+    "name": "niio",
+    "icon": "https://huhu.to/favicon.ico",
+    "url": "https://github.com/your-user"
+  },
+  "version": "1.0.1",
+  "language": "Raw (multi-audio)",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "type": "anime",
+  "downloadSupport": false,
+  "baseUrl": "https://huhu.to",
+  "searchBaseUrl": "https://huhu.to/web-vod/?search=%s",
+  "scriptUrl": "https://gist.githubusercontent.com/YOUR_USER/XXXXXX/raw/HuhuTo.js",
+  "asyncJS": true,
+  "streamAsyncJS": true,
+  "softsub": false
+}
