@@ -1,7 +1,7 @@
 /**
- *  Huhu.to – Sora module  (search fixed)
+ *  Huhu.to – Sora module  (React-Slick / MUI layout)
  *  Author: Nb11111111
- *  Version: 1.0.1
+ *  Version: 1.0.4
  */
 
 const BASE = "https://huhu.to";
@@ -13,27 +13,34 @@ const text = url => fetch(url,{headers:{"User-Agent":UA}}).then(r=>r.text());
 /* ---------- search ---------- */
 async function search(q){
   const html = await text(`${BASE}/web-vod/?search=${encodeURIComponent(q)}`);
-  return [...html.matchAll(/<a class="v-thumb stui-vodlist__thumb lazyload" href="(\/web-vod\/[^"]+)"[^>]*data-original="([^"]+)"[^>]*title="([^"]+)"/g)]
-         .map(m=>({
-            id: m[1],
-            title: m[3].trim(),
-            cover: m[2].startsWith("//")?"https:"+m[2]:m[2],
-            synopsis:"", genres:"", status:"", score:"N/A", episodes:1
-         }));
+  const blocks = [...html.matchAll(
+    /<div[^>]*data-index="\d+"[^>]*class="slick-slide[^"]*"[^>]*>.*?<a[^>]*\bhref="(\/web-vod\/item\?id=[^"]+)"[^>]*>.*?<img[^>]*\bsrc="([^"]+)"[^>]*\balt="([^"]+)"/gs
+  )];
+  return blocks.map(m=>({
+    id: m[1],
+    title: m[3].trim(),
+    cover: m[2].startsWith('//') ? 'https:'+m[2] : m[2],
+    synopsis:'', genres:'', status:'', score:'N/A', episodes:1
+  }));
 }
 
 /* ---------- catalog ---------- */
 async function catalog(page=1){
   const html = await text(`${BASE}/web-vod/type/id-1/page-${page}.html`);
-  const arr  = [...html.matchAll(/<a class="v-thumb stui-vodlist__thumb lazyload" href="(\/web-vod\/[^"]+)"[^>]*data-original="([^"]+)"[^>]*title="([^"]+)"/g)]
-         .map(m=>({
-            id: m[1],
-            title: m[3].trim(),
-            cover: m[2].startsWith("//")?"https:"+m[2]:m[2],
-            synopsis:"", genres:"", status:"", score:"N/A", episodes:1
-         }));
+  const blocks = [...html.matchAll(
+    /<div[^>]*data-index="\d+"[^>]*class="slick-slide[^"]*"[^>]*>.*?<a[^>]*\bhref="(\/web-vod\/item\?id=[^"]+)"[^>]*>.*?<img[^>]*\bsrc="([^"]+)"[^>]*\balt="([^"]+)"/gs
+  )];
   const hasNext = html.includes(`page-${page+1}.html`);
-  return {page, hasNext, videos:arr};
+  return {
+    page,
+    hasNext,
+    videos: blocks.map(m=>({
+      id: m[1],
+      title: m[3].trim(),
+      cover: m[2].startsWith('//') ? 'https:'+m[2] : m[2],
+      synopsis:'', genres:'', status:'', score:'N/A', episodes:1
+    }))
+  };
 }
 
 /* ---------- stream ---------- */
