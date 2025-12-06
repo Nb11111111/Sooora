@@ -14,7 +14,7 @@
   "downloadSupport": false,
   "baseUrl": "https://huhu.to",
   "searchBaseUrl": "https://huhu.to/web-vod/?search=%s",
-  "scriptUrl": "https://gist.githubusercontent.com/YOUR_USER/XXXXXX/raw/HuhuTo.js",
+  "scriptUrl": "https://raw.githubusercontent.com/Nb11111111/Sooora/refs/heads/main/HuhuTo.js",
   "asyncJS": true,
   "streamAsyncJS": true,
   "softsub": false
