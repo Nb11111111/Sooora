@@ -1,7 +1,7 @@
 /**
- *  Huhu.to – Sora module  (React-Slick / MUI layout)
+ *  Huhu.to – Sora module  (JSON API version)
  *  Author: Nb11111111
- *  Version: 1.0.4
+ *  Version: 1.0.5
  */
 
 const BASE = "https://huhu.to";
@@ -9,35 +9,30 @@ const UA   = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
 
 /* ---------- helpers ---------- */
 const text = url => fetch(url,{headers:{"User-Agent":UA}}).then(r=>r.text());
+const json = url => fetch(url,{headers:{"User-Agent":UA}}).then(r=>r.json());
 
 /* ---------- search ---------- */
 async function search(q){
-  const html = await text(`${BASE}/web-vod/?search=${encodeURIComponent(q)}`);
-  const blocks = [...html.matchAll(
-    /<div[^>]*data-index="\d+"[^>]*class="slick-slide[^"]*"[^>]*>.*?<a[^>]*\bhref="(\/web-vod\/item\?id=[^"]+)"[^>]*>.*?<img[^>]*\bsrc="([^"]+)"[^>]*\balt="([^"]+)"/gs
-  )];
-  return blocks.map(m=>({
-    id: m[1],
-    title: m[3].trim(),
-    cover: m[2].startsWith('//') ? 'https:'+m[2] : m[2],
+  const data = await json(`${BASE}/web-vod/api/list?id=movie.popular.search%3D${encodeURIComponent(q)}`);
+  return data.list.map(it=>({
+    id: `/web-vod/item?id=${it.id}`,
+    title: it.name,
+    cover: it.poster_path.startsWith('//') ? 'https:'+it.poster_path : it.poster_path,
     synopsis:'', genres:'', status:'', score:'N/A', episodes:1
   }));
 }
 
 /* ---------- catalog ---------- */
 async function catalog(page=1){
-  const html = await text(`${BASE}/web-vod/type/id-1/page-${page}.html`);
-  const blocks = [...html.matchAll(
-    /<div[^>]*data-index="\d+"[^>]*class="slick-slide[^"]*"[^>]*>.*?<a[^>]*\bhref="(\/web-vod\/item\?id=[^"]+)"[^>]*>.*?<img[^>]*\bsrc="([^"]+)"[^>]*\balt="([^"]+)"/gs
-  )];
-  const hasNext = html.includes(`page-${page+1}.html`);
+  const data = await json(`${BASE}/web-vod/api/list?id=movie.popular.page-${page}`);
+  const hasNext = data.list.length === 20;          // 20-item pages
   return {
     page,
     hasNext,
-    videos: blocks.map(m=>({
-      id: m[1],
-      title: m[3].trim(),
-      cover: m[2].startsWith('//') ? 'https:'+m[2] : m[2],
+    videos: data.list.map(it=>({
+      id: `/web-vod/item?id=${it.id}`,
+      title: it.name,
+      cover: it.poster_path.startsWith('//') ? 'https:'+it.poster_path : it.poster_path,
       synopsis:'', genres:'', status:'', score:'N/A', episodes:1
     }))
   };
