@@ -1,11 +1,11 @@
 /**
- *  Huhu.to – Sora module  (Cloudflare-Worker proxy)
+ *  Huhu.to – Sora module  (CF-Worker mit Cookie-Handshake)
  *  Author: Nb11111111
- *  Version: 1.0.7
+ *  Version: 1.0.8
  */
 
 const BASE  = "https://huhu.to";
-const PROXY = "https://delicate-mountain-6b2f.niloaf39.workers.dev/huhu"; // <-- unser Worker
+const PROXY = "https://hi.niloaf39.workers.dev/huhu";
 const UA    = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
 
 /* ---------- helpers ---------- */
