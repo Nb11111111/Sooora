@@ -1,0 +1,21 @@
+{
+  "sourceName": "Anix.pl (ENG SUB)",
+  "iconUrl": "https://anix.com.pl/wp-content/uploads/2025/08/1860578_20240312221-150x150.png",
+  "author": {
+    "name": "niio",
+    "icon": "https://github.com/Nb11111111.png",
+    "url": "https://github.com/Nb11111111"
+  },
+  "version": "1.0.1",
+  "language": "English (SUB)",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "type": "anime",
+  "downloadSupport": false,
+  "baseUrl": "https://anix.com.pl",
+  "searchBaseUrl": "https://anix.com.pl/search?keyword=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/Nb11111111/Sooora/refs/heads/main/anix.js",
+  "asyncJS": true,
+  "streamAsyncJS": true,
+  "softsub": true
+}
