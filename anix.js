@@ -1,38 +1,43 @@
 /**
- *  Huhu.to – Sora module  (CF-Worker mit Cookie-Handshake)
- *  Author: Nb11111111
- *  Version: 1.0.8
+ *  anix.com.pl – Sora module
+ *  Author: niio
+ *  Version: 1.0.0
  */
 
-const BASE  = "https://huhu.to";
-const PROXY = "https://hi.niloaf39.workers.dev/huhu";
-const UA    = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
+const BASE = "https://anix.com.pl";
+const UA   = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
 
 /* ---------- helpers ---------- */
-const getJSON = url => fetch(PROXY + url, {headers:{"User-Agent":UA}}).then(r=>r.json());
+const text = url => fetch(url,{headers:{"User-Agent":UA}}).then(r=>r.text());
 
 /* ---------- search ---------- */
 async function search(q){
-  const data = await getJSON(`/web-vod/api/list?id=movie.popular.search%3D${encodeURIComponent(q)}`);
-  return data.list.map(it=>({
-    id: `/web-vod/item?id=${it.id}`,
-    title: it.name,
-    cover: it.poster_path.startsWith('//') ? 'https:'+it.poster_path : it.poster_path,
+  const html = await text(`${BASE}/search?keyword=${encodeURIComponent(q)}`);
+  const rows = [...html.matchAll(
+    /<article[^>]*>.*?<a[^>]*\bhref="(\/anime\/[^"]+)"[^>]*>.*?<img[^>]*\bsrc="([^"]+)"[^>]*\balt="([^"]+)"/gs
+  )];
+  return rows.map(m=>({
+    id: m[1],
+    title: m[3].trim(),
+    cover: m[2].startsWith('//') ? 'https:'+m[2] : m[2],
     synopsis:'', genres:'', status:'', score:'N/A', episodes:1
   }));
 }
 
 /* ---------- catalog ---------- */
 async function catalog(page=1){
-  const data = await getJSON(`/web-vod/api/list?id=movie.popular.page-${page}`);
-  const hasNext = data.list.length === 20;
+  const html = await text(`${BASE}/anime?page=${page}`);
+  const rows = [...html.matchAll(
+    /<article[^>]*>.*?<a[^>]*\bhref="(\/anime\/[^"]+)"[^>]*>.*?<img[^>]*\bsrc="([^"]+)"[^>]*\balt="([^"]+)"/gs
+  )];
+  const hasNext = html.includes(`?page=${page+1}`);
   return {
     page,
     hasNext,
-    videos: data.list.map(it=>({
-      id: `/web-vod/item?id=${it.id}`,
-      title: it.name,
-      cover: it.poster_path.startsWith('//') ? 'https:'+it.poster_path : it.poster_path,
+    videos: rows.map(m=>({
+      id: m[1],
+      title: m[3].trim(),
+      cover: m[2].startsWith('//') ? 'https:'+m[2] : m[2],
       synopsis:'', genres:'', status:'', score:'N/A', episodes:1
     }))
   };
@@ -40,7 +45,7 @@ async function catalog(page=1){
 
 /* ---------- stream ---------- */
 async function stream(id){
-  const html = await fetch(PROXY + id, {headers:{"User-Agent":UA}}).then(r=>r.text());
+  const html = await text(BASE+id);
   const m3u8 = html.match(/"url":"(https:\/\/[^"]+\.m3u8)"/)?.[1];
   if(!m3u8) throw new Error("No HLS found");
   return { url:m3u8, headers:{"Referer":BASE,"User-Agent":UA}, subtitles:[] };
